@@ -17,6 +17,8 @@ tensorboard = TensorBoard(log_dir='logs/{}'.format(NAME))
 #gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
 #sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
+start = time.time()
+
 x = np.load('C:/Users/Lenovo/PycharmProjects/handDetect/DataSets/features.npy')
 y = np.load('C:/Users/Lenovo/PycharmProjects/handDetect/DataSets/labels.npy')
 
@@ -40,5 +42,7 @@ model.add(Activation("sigmoid"))
 
 model.compile(loss="binary_crossentropy",optimizer="adam",metrics=['accuracy'])
 
-model.fit(x, y, batch_size=32, epochs=5, validation_split=0.1, callbacks=[tensorboard])
+model.fit(x, y, batch_size=16, epochs=5, validation_split=0.1, callbacks=[tensorboard])
+end = time.time()
+print(end - start)
 
