@@ -4,45 +4,56 @@ import tensorflow as tf
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, Conv2D, MaxPooling2D
-import numpy as np
-from tensorflow.keras.callbacks import TensorBoard
-from tensorflow.python.client import device_lib
-import time
+from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
+from tensorflow.keras.layers import Conv2D, MaxPooling2D
 
-NAME = "UP-vs-DOWN-cnn-64-2-{}".format(int(time.time()))
+import pickle
 
-tensorboard = TensorBoard(log_dir='logs/{}'.format(NAME))
+pickle_in = open("X.pickle", "rb")
+X = pickle.load(pickle_in)
 
-#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-#sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+pickle_in = open("Y.pickle", "rb")
+Y = pickle.load(pickle_in)
 
-start = time.time()
+X = X/255.0
 
-x = np.load('C:/Users/Lenovo/PycharmProjects/handDetect/DataSets/features.npy')
-y = np.load('C:/Users/Lenovo/PycharmProjects/handDetect/DataSets/labels.npy')
+dense_layers = [0]
+layer_sizes = [64]
+conv_layers = [4]
 
-x = x/255.0
+for dense_layer in dense_layers:
+    for layer_size in layer_sizes:
+        for conv_layer in conv_layers:
 
-model = Sequential()
-model.add(Conv2D(64, (12, 12), input_shape = x.shape[1:]))  # ... WINDOW ...
-model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2)))  # TODO możliwe mnozenie przez 4
+            model = Sequential()
 
-model.add(Conv2D(64, (12,12)))  # ... WINDOW ...
-model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2)))
+            model.add(Conv2D(layer_size, (3, 3), input_shape=X.shape[1:]))
+            model.add(Activation('relu'))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
 
-model.add(Flatten())
-model.add(Dense(64))
-model.add(Activation("relu"))
+            for l in range(conv_layer-1):
+                model.add(Conv2D(layer_size, (3, 3)))
+                model.add(Activation('relu'))
+                model.add(MaxPooling2D(pool_size=(2, 2)))
 
-model.add(Dense(1))
-model.add(Activation("sigmoid"))
+            model.add(Flatten())
 
-model.compile(loss="binary_crossentropy",optimizer="adam",metrics=['accuracy'])
+            for _ in range(dense_layer):
+                model.add(Dense(layer_size))
+                model.add(Activation('relu'))
 
-model.fit(x, y, batch_size=16, epochs=5, validation_split=0.1, callbacks=[tensorboard])
-end = time.time()
-print(end - start)
+            model.add(Dense(1))
+            model.add(Activation('sigmoid'))
+
+            model.compile(loss='binary_crossentropy',
+                          optimizer='adam',
+                          metrics=['accuracy'],
+                          )
+
+            model.fit(X, Y,
+                      batch_size=32,
+                      epochs=10,
+                      validation_split=0.3)
+
+model.save('test_model_dc.model')
 
