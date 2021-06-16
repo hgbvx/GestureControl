@@ -4,3 +4,5 @@ venv/
 /logs
 /DataSets/model.h5
 /DataSets/features.npy
+/TestOutputImages
+/test_model_dc.model

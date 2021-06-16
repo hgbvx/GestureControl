@@ -6,7 +6,7 @@ from tqdm import tqdm
 import random
 from path import Path
 
-DATADIR = Path.outputImages
+DATADIR = Path.testOutputImages
 
 CATEGORIES = ["Si", "Thumb"]
 
@@ -44,7 +44,7 @@ for features, label in training_data:
 	y.append(label)
 
 x = np.array(x).reshape(-1, IMG_SIZE, IMG_SIZE, 1) # 1 to 3 if color
+y = np.array(y)
 
-np.save('features.npy',x)
-np.save('labels.npy',y)
-
+np.save('x.npy',x)
+np.save('y.npy',y)
