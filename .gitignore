@@ -1,0 +1,6 @@
+venv/
+.idea/
+/OutputImages
+/logs
+/DataSets/model.h5
+/DataSets/features.npy
