@@ -62,7 +62,7 @@ for dense_layer in dense_layers:
 
             model.fit(X, Y,
                       batch_size=32,
-                      epochs=10,
+                      epochs=15,
                       validation_split=0.3)
 
 model.save('test_model_dc.model')
